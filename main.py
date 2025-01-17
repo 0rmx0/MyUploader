@@ -5,6 +5,9 @@ import base64
 from cryptography.fernet import Fernet
 import tkinter as tk
 from tkinter import filedialog, messagebox
+import subprocess
+import sys
+import platform
 
 
 def charger_configuration(chemin_config="config.json"):
@@ -96,6 +99,24 @@ def televerser_fichier_ou_repertoire(config, chemin, mot_de_passe):
         print(f"Chemin invalide : {chemin}")
 
 
+def lancer_config_generator():
+    """Lancer le script config_generator.py dans une nouvelle fenêtre de terminal."""
+    try:
+        if platform.system() == "Linux":
+            subprocess.run(["gnome-terminal", "--", sys.executable, "config_generator.py"], check=True)
+        elif platform.system() == "Darwin":  # macOS
+            subprocess.run(["osascript", "-e", f'tell app "Terminal" to do script "{sys.executable} config_generator.py"'], check=True)
+        elif platform.system() == "Windows":
+            subprocess.run(["start", "cmd", "/k", sys.executable, "config_generator.py"], shell=True, check=True)
+        else:
+            raise NotImplementedError("Unsupported OS")
+        messagebox.showinfo("Succès", "Le script de génération de configuration a été exécuté avec succès.")
+    except subprocess.CalledProcessError as e:
+        messagebox.showerror("Erreur", f"Échec de l'exécution du script : {e}")
+    except NotImplementedError as e:
+        messagebox.showerror("Erreur", str(e))
+
+
 def selectionner_repertoire_ou_fichier(config):
     """Créer une interface graphique pour sélectionner un répertoire ou un fichier."""
     def parcourir_repertoire():
@@ -143,6 +164,11 @@ def selectionner_repertoire_ou_fichier(config):
     champ_mot_de_passe.grid(row=1, column=1, columnspan=3, padx=10, pady=5, sticky="w")
 
     tk.Button(root, text="Lancer le téléversement", command=lancer_televersement).grid(row=2, column=0, columnspan=4, pady=10)
+    tk.Button(root, text="Générer config", command=lancer_config_generator).grid(row=3, column=0, columnspan=4, pady=10)
+
+    # Ajouter le numéro de version en bas à droite
+    version_label = tk.Label(root, text="Version 0.0.2", font=("Arial", 8))
+    version_label.place(relx=1.0, rely=1.0, anchor='se', x=-10, y=-10)
 
     root.mainloop()
 
