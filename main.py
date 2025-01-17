@@ -11,13 +11,13 @@ import platform
 
 
 def charger_configuration(chemin_config="config.json"):
-    """Charger et retourner la configuration."""
+    """Charger et retourner la configuration, avec gestion d'erreur non bloquante."""
     try:
         with open(chemin_config, "r") as f:
             return json.load(f)
     except Exception as e:
         print(f"Erreur lors du chargement du fichier de configuration : {e}")
-        exit(1)
+        return None  # Retourner None pour indiquer un échec sans bloquer le programme
 
 
 def decrypter_cles(config, mot_de_passe):
