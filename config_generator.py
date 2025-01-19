@@ -20,7 +20,7 @@ def create_encrypted_config():
 
     # Saisie des paramètres S3
     bucket_name = input("Enter your S3 bucket name: ")
-    region = input("Enter your S3 region: ")
+    endpoint_url = input("Enter your S3 region: ")
     access_key = input("Enter your S3 access key: ")
     secret_key = input("Enter your S3 secret key: ")
 
@@ -31,7 +31,7 @@ def create_encrypted_config():
     # Création du fichier de configuration
     config = {
         "bucket_name": bucket_name,
-        "region": region,
+        "endpoint_url": endpoint_url,
         "access_key_encrypted": access_key_encrypted,
         "secret_key_encrypted": secret_key_encrypted
     }

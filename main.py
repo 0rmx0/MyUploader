@@ -17,6 +17,7 @@ def charger_configuration(chemin_config="config.json"):
             return json.load(f)
     except Exception as e:
         print(f"Erreur lors du chargement du fichier de configuration : {e}")
+        messagebox.showerror("Erreur lors du chargement du fichier de configuration : ", str(e))
         return None  # Retourner None pour indiquer un échec sans bloquer le programme
 
 
@@ -30,7 +31,8 @@ def decrypter_cles(config, mot_de_passe):
         return cle_acces, cle_secrete
     except Exception as e:
         print(f"Erreur lors du décryptage des clés : {e}")
-        exit(1)
+        messagebox.showerror("Erreur lors du décryptage des clés :", str(e))
+        return None  # Retourner None pour indiquer un échec sans bloquer le programme
 
 
 def telecharger_fichier_en_plusieurs_parties(client_s3, nom_bucket, chemin_fichier, cle_s3, taille_partie=10 * 1024 * 1024):
@@ -82,8 +84,12 @@ def televerser_fichier_ou_repertoire(config, chemin, mot_de_passe):
     """Téléverser un fichier unique ou un répertoire vers S3."""
     cle_acces, cle_secrete = decrypter_cles(config, mot_de_passe)
     client_s3 = boto3.client(
-        "s3", aws_access_key_id=cle_acces, aws_secret_access_key=cle_secrete, region_name=config["region"]
-    )
+    "s3",
+    aws_access_key_id=cle_acces,
+    aws_secret_access_key=cle_secrete,
+    endpoint_url=config["endpoint_url"]  # Utilisation de l'endpoint Storj
+)
+
     nom_bucket = config["bucket_name"]
 
     if os.path.isfile(chemin):
